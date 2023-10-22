@@ -88,32 +88,33 @@ class OpenInterpreterHelper(Interpreter):
         self.save_messages_json(messages)
         logger.info({"message": "Chat with interpreter.", "messages": messages})
 
-    def convert_interpreter_responses_to_slack_message(messages: list) -> str:
-        """
-        Convert interpreter responses to slack message
-        :param messages: list of interpreter responses
-        :return: slack message
-        """
-        output_text = ""
 
-        for message in messages:
-            role = message["role"]
-            if role == "user":
-                continue
+def convert_interpreter_responses_to_slack_message(messages: list) -> str:
+    """
+    Convert interpreter responses to slack message
+    :param messages: list of interpreter responses
+    :return: slack message
+    """
+    output_text = ""
 
-            elif role == "assistant":
-                content = message["content"]
-                output_text += f"\n{content}"
-                function_call = message.get("function_call")
-                if function_call:
-                    function_name = function_call["name"]
-                    if function_name == "run_code":
-                        arguments = function_call["parsed_arguments"]
-                        code = arguments["code"]
-                        language = arguments["language"]
-                        output_text += f"\n```{language}\n{code}\n```\n"
+    for message in messages:
+        role = message["role"]
+        if role == "user":
+            continue
 
-            elif role == "function" and message["content"] != "No output":
-                output_text += f"\n```{message['content']}```\n"
-        logger.info({"message": "Generate response to user.", "output_text": output_text, "messages": messages})
-        return output_text
+        elif role == "assistant":
+            content = message["content"]
+            output_text += f"\n{content}"
+            function_call = message.get("function_call")
+            if function_call:
+                function_name = function_call["name"]
+                if function_name == "run_code":
+                    arguments = function_call["parsed_arguments"]
+                    code = arguments["code"]
+                    language = arguments["language"]
+                    output_text += f"\n```{language}\n{code}\n```\n"
+
+        elif role == "function" and message["content"] != "No output":
+            output_text += f"\n```{message['content']}```\n"
+    logger.info({"message": "Generate response to user.", "output_text": output_text, "messages": messages})
+    return output_text
