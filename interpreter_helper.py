@@ -14,7 +14,7 @@ You must respect the following rules:
 1. Current directory is read-only. Use {temp_dir_path} as your working directory and generate all files there.
 2. Use PYTHON to run any code you need.
 3. If you need to use a third-party library, install it immediately.
-4. Answer in the language the user last used.
+4. Answer in Japanese.
 5. Save all data and files to `{temp_dir_path}`.
 6. Please reinitialize variables and files each time, as each request comes from a new session.
 
@@ -91,11 +91,6 @@ class OpenInterpreterHelper(Interpreter):
 
 
 def convert_interpreter_responses_to_slack_message(messages: list) -> str:
-    """
-    Convert interpreter responses to slack message
-    :param messages: list of interpreter responses
-    :return: slack message
-    """
     output_text = ""
 
     for message in messages:
@@ -105,7 +100,8 @@ def convert_interpreter_responses_to_slack_message(messages: list) -> str:
 
         elif role == "assistant":
             content = message["content"]
-            output_text += f"\n{content}"
+            if content:
+                output_text += f"\n{content}"
             function_call = message.get("function_call")
             if function_call:
                 function_name = function_call["name"]
