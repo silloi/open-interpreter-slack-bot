@@ -23,7 +23,7 @@ def get_thread_parent_message_user_id(client: WebClient, channel_id: str, thread
         logger.info(
             {
                 "message": "Get thread parent message user id.",
-                "original_user_id": original_user_id,
+                "channel_id": channel_id,
                 "thread_ts": thread_ts,
                 "original_user_id": original_user_id,
             }
@@ -71,6 +71,7 @@ def load_file_uploaded_by_user(client: WebClient, file_id: str, save_dir_path: s
         # Download the file
         opener = urllib.request.build_opener()
         opener.addheaders = [("Authorization", "Bearer " + os.environ.get("SLACK_BOT_TOKEN", ""))]
+        urllib.request.install_opener(opener)
         if not os.path.exists(save_dir_path):
             os.makedirs(save_dir_path)
         file_path = os.path.join(save_dir_path, file_name)
@@ -84,7 +85,7 @@ def load_file_uploaded_by_user(client: WebClient, file_id: str, save_dir_path: s
 
 def upload_file_to_thread(client: WebClient, channel_id: str, thread_ts: str, file_path: str):
     try:
-        response = client.files_upload(channels_id=channel_id, thread_ts=thread_ts, file=file_path)
+        response = client.files_upload(channels=channel_id, thread_ts=thread_ts, file=file_path)
         logger.info(
             {
                 "message": "Upload file to thread.",

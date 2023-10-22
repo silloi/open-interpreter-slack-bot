@@ -36,7 +36,7 @@ def mentioned(body, say: Say):
     event = body["event"]
     thread_ts = event.get("thread_ts", None) or event["ts"]
     channel_id = event["channel"]
-    parent_message_user_id = slack_api.get_thread_parent_messagee_user_id(client, channel_id, thread_ts)
+    parent_message_user_id = slack_api.get_thread_parent_message_user_id(client, channel_id, thread_ts)
     text = event["text"]
     message_by_user = text.replace(f"<@{slack_api.get_bot_id(client)}>", "").strip()
 
@@ -83,5 +83,5 @@ def mentioned(body, say: Say):
     new_messages = messages[previous_messages_length:]
     display_message = convert_interpreter_responses_to_slack_message(new_messages)
 
-    gcloud_storage.upload_files_to_budket(temp_dir, bucket_name, thread_ts + "/")
+    gcloud_storage.upload_files_to_bucket(temp_dir, bucket_name, thread_ts + "/")
     say(text=display_message, thread_ts=thread_ts)

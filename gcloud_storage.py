@@ -32,7 +32,7 @@ def download_files_from_bucket(bucket_name: str, destination_dir_path: str, blob
 
     # Check if the bucket exists
     if not storage_client.lookup_bucket(bucket_name):
-        storage_client.crearate_bucket(bucket_name)
+        storage_client.create_bucket(bucket_name)
         return []
 
     # Get the bucket
@@ -40,7 +40,7 @@ def download_files_from_bucket(bucket_name: str, destination_dir_path: str, blob
 
     file_paths = []
 
-    # Look throught the blobs (files) and download them
+    # Loop throught the blobs (files) and download them
     for blob in bucket.list_blobs(prefix=blob_prefix):
         file_name = os.path.basename(blob.name)
         destination_file_path = os.path.join(destination_dir_path, file_name)
@@ -68,7 +68,7 @@ def upload_files_to_bucket(local_directory_path: str, bucket_name: str, blob_pre
 
     ignore_patterns = get_ignore_patterns(".gitignore")
 
-    # Look through each file in the temporary directory
+    # Loop through each file in the temporary directory
     for root, _, files in os.walk(local_directory_path):
         for filename in files:
             if any(fnmatch.fnmatch(filename, pattern) for pattern in ignore_patterns):
@@ -78,7 +78,7 @@ def upload_files_to_bucket(local_directory_path: str, bucket_name: str, blob_pre
             relative_path = os.path.relpath(source_file_path, local_directory_path)
             blob_name = os.path.join(blob_prefix, relative_path)
 
-            # Upload a blob
+            # Create a blob
             blob = bucket.blob(blob_name)
 
             # Upload the file

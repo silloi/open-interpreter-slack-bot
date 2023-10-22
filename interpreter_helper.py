@@ -65,7 +65,7 @@ class OpenInterpreterHelper(Interpreter):
                 messages = json.load(f)
         else:
             messages = []
-        logger.info({"message": "Read messages.json.", "messages": messages})
+        logger.info({"message": "Read messages json.", "messages": messages})
         return messages
 
     def save_messages_json(self, messages: List[dict]):
@@ -76,7 +76,7 @@ class OpenInterpreterHelper(Interpreter):
         messages_json = json.dumps(messages, indent=4, ensure_ascii=False)
         with open(os.path.join(self.temp_dir_path, "messages.json"), "w", encoding="utf-8") as f:
             f.write(messages_json)
-        logger.info({"message": "Save messages.json.", "messages": messages})
+        logger.info({"message": "Save messages json.", "messages": messages})
 
     def chat_and_save_messages_json(self, message: str) -> List[dict]:
         """
@@ -87,6 +87,7 @@ class OpenInterpreterHelper(Interpreter):
         messages = self.chat(message, return_messages=True)
         self.save_messages_json(messages)
         logger.info({"message": "Chat with interpreter.", "messages": messages})
+        return messages
 
 
 def convert_interpreter_responses_to_slack_message(messages: list) -> str:
