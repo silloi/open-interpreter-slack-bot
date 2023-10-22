@@ -1,13 +1,14 @@
 import os
 
-from flask import Flask
-from slack_bolt import App, Say
+from flask import Flask, request
+from slack_bolt import App, BoltResponse, Say
 from slack_bolt.adapter.flask import SlackRequestHandler
 from slack_sdk import WebClient
 
 import gcloud_storage
 import slack_api
 from helpers import get_temp_dir
+from interpreter_helper import OpenInterpreterHelper, convert_interpreter_responses_to_slack_message
 from logging_conf import logger
 
 app = Flask(__name__)
@@ -15,9 +16,17 @@ slack_app = App(token=os.environ["SLACK_BOT_TOKEN"], signing_secret=os.environ["
 handler = SlackRequestHandler(slack_app)
 
 
-@app.route(".")
-def hello_world():
-    return "<p>Hello, World!</p>"
+@app.route("/slack/events", methods="POST")
+def slack_events():
+    return handler.handle(request)
+
+
+@slack_app.middleware
+def handle_retry(req, next):
+    if "x-slack-retry-num" in req.headers and req.headers["x-slack-retry-reason"][0] == "http_timeout":
+        return BoltResponse(status=200, body="success")
+
+    next()
 
 
 @slack_app.event("app_mention")
@@ -67,3 +76,12 @@ def mentioned(body, say: Say):
         say(text="Enter something", thread_ts=thread_ts)
         logger.info({"message": "Empty message."})
         return
+
+    interpreter = OpenInterpreterHelper.with_default_system_message(temp_dir)
+    previous_messages_length = len(interpreter.messages)
+    messages = interpreter.chat_and_save_messages_json(message_by_user)
+    new_messages = messages[previous_messages_length:]
+    display_message = convert_interpreter_responses_to_slack_message(new_messages)
+
+    gcloud_storage.upload_files_to_budket(temp_dir, bucket_name, thread_ts + "/")
+    say(text=display_message, thread_ts=thread_ts)
