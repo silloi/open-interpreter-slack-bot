@@ -16,7 +16,7 @@ slack_app = App(token=os.environ["SLACK_BOT_TOKEN"], signing_secret=os.environ["
 handler = SlackRequestHandler(slack_app)
 
 
-@app.route("/slack/events", methods="POST")
+@app.route("/slack/events", methods=["POST"])
 def slack_events():
     return handler.handle(request)
 
