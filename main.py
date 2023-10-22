@@ -57,7 +57,7 @@ def mentioned(body, say: Say):
         }
     )
 
-    if str(message_by_user).lower() == "download" or message_by_user.to_ == "ダウンロード":
+    if str(message_by_user).lower() == "download" or message_by_user == "ダウンロード":
         for file_path in loaded_file_paths:
             if file_path.endswith("/messages.json"):
                 continue
