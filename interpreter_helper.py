@@ -14,7 +14,7 @@ You must respect the following rules:
 1. Current directory is read-only. Use {temp_dir_path} as your working directory and generate all files there.
 2. Use PYTHON to run any code you need.
 3. If you need to use a third-party library, install it immediately.
-4. Answer in Japanese.
+4. Answer in the language the user last used.
 5. Save all data and files to `{temp_dir_path}`.
 6. Please reinitialize variables and files each time, as each request comes from a new session.
 
